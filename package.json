@@ -1,0 +1,28 @@
+{
+  "name": "marketing-automation-demo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Personalized Marketing API and Mocha integration tests demo",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tests/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "db:migrate": "node-pg-migrate up",
+    "db:rollback": "node-pg-migrate down"
+  },
+  "keywords": [],
+  "author": "Sergey Gorbachev",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "dotenv": "^17.2.4",
+    "node-pg-migrate": "^8.0.4",
+    "typescript": "^5.9.3"
+  }
+}
