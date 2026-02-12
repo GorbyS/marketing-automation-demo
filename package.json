@@ -12,8 +12,8 @@
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
     "test": "npm run test --workspaces",
-    "db:migrate": "node-pg-migrate up",
-    "db:rollback": "node-pg-migrate down"
+    "db:migrate": "node-pg-migrate up --envPath .env -m db/migrations",
+    "db:rollback": "node-pg-migrate down --envPath .env -m db/migrations"
   },
   "keywords": [],
   "author": "Sergey Gorbachev",
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^25.2.3",
     "dotenv": "^17.2.4",
+    "dotenv-cli": "^11.0.0",
     "node-pg-migrate": "^8.0.4",
     "typescript": "^5.9.3"
   }

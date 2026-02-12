@@ -1,0 +1,406 @@
+openapi: 3.0.3
+info:
+  title: Personalized Marketing API (Demo)
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Health
+  - name: Customers
+  - name: Consents
+  - name: Events
+  - name: Offers
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Healthcheck
+      responses:
+        '200':
+          description: Service and DB are OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Service is running but DB is not reachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthDegradedResponse'
+
+  /v1/customers:
+    post:
+      tags: [Customers]
+      summary: Create customer marketing profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Customer already exists (externalId unique)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/customers/{id}:
+    get:
+      tags: [Customers]
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    /v1/consents/{customerId}:
+    put:
+      tags: [Consents]
+      summary: Update marketing consent for customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertConsentRequest'
+      responses:
+        '200':
+          description: Consent updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/consents/{customerId}:
+    put:
+      tags: [Consents]
+      summary: Update marketing consent for customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertConsentRequest'
+      responses:
+        '200':
+          description: Consent updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/events:
+    post:
+      tags: [Events]
+      summary: Ingest customer event (idempotent)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestEventRequest'
+      responses:
+        '201':
+          description: Event stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestEventResponse'
+        '200':
+          description: Duplicate event (same idempotencyKey) - already stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestEventResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/offers/next:
+    get:
+      tags: [Offers]
+      summary: Get next best offer for customer
+      parameters:
+        - name: customerId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Decision result (offer or no offer)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NextOfferResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status, db]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        db:
+          type: string
+          enum: [ok]
+
+    HealthDegradedResponse:
+      type: object
+      additionalProperties: false
+      required: [status, db]
+      properties:
+        status:
+          type: string
+          enum: [degraded]
+        db:
+          type: string
+          enum: [down]
+
+    CreateCustomerRequest:
+      type: object
+      additionalProperties: false
+      required: [externalId]
+      properties:
+        externalId:
+          type: string
+          minLength: 3
+        fullName:
+          type: string
+          nullable: true
+        attributes:
+          type: object
+          description: Arbitrary marketing attributes
+          additionalProperties: true
+
+    CustomerResponse:
+      type: object
+      additionalProperties: false
+      required: [id, externalId, attributes, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        externalId:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        attributes:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [message]
+          properties:
+            message:
+              type: string
+
+    UpsertConsentRequest:
+      type: object
+      additionalProperties: false
+      required: [marketingOptIn]
+      properties:
+        marketingOptIn:
+          type: boolean
+
+    ConsentResponse:
+      type: object
+      additionalProperties: false
+      required: [customerId, marketingOptIn, updatedAt]
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        marketingOptIn:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+
+    IngestEventRequest:
+      type: object
+      additionalProperties: false
+      required: [customerId, eventType, idempotencyKey]
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+          minLength: 2
+        idempotencyKey:
+          type: string
+          minLength: 8
+        payload:
+          type: object
+          additionalProperties: true
+
+    IngestEventResponse:
+      type: object
+      additionalProperties: false
+      required: [id, customerId, eventType, idempotencyKey, createdAt, isDuplicate]
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+        idempotencyKey:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        isDuplicate:
+          type: boolean
+
+    NextOfferResponse:
+      type: object
+      additionalProperties: false
+      required: [customerId, hasOffer]
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        hasOffer:
+          type: boolean
+        offer:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/OfferDecision'
+        reason:
+          type: string
+          description: Decision reason
+
+    OfferDecision:
+      type: object
+      additionalProperties: false
+      required: [offerCode, decisionReason, createdAt]
+      properties:
+        offerCode:
+          type: string
+        decisionReason:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
