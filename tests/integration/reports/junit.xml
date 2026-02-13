@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="14.445" tests="13" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-02-13T04:26:44" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Consents" timestamp="2026-02-13T04:26:44" tests="3" file="D:\apps\test-automation\marketing-automation-demo\tests\integration\src\consents.spec.ts" time="4.157" failures="0">
+    <testcase name="Consents upserts consent (200)" time="0.196" classname="upserts consent (200)">
+    </testcase>
+    <testcase name="Consents returns 404 when customer does not exist" time="0.031" classname="returns 404 when customer does not exist">
+    </testcase>
+    <testcase name="Consents returns 400 when marketingOptIn is not boolean" time="0.060" classname="returns 400 when marketingOptIn is not boolean">
+    </testcase>
+  </testsuite>
+  <testsuite name="Customers" timestamp="2026-02-13T04:26:48" tests="3" file="D:\apps\test-automation\marketing-automation-demo\tests\integration\src\customers.spec.ts" time="1.925" failures="0">
+    <testcase name="Customers creates customer (201)" time="0.023" classname="creates customer (201)">
+    </testcase>
+    <testcase name="Customers returns 409 on duplicate externalId" time="0.019" classname="returns 409 on duplicate externalId">
+    </testcase>
+    <testcase name="Customers returns 400 when externalId is missing" time="0.003" classname="returns 400 when externalId is missing">
+    </testcase>
+  </testsuite>
+  <testsuite name="E2E flow" timestamp="2026-02-13T04:26:50" tests="1" file="D:\apps\test-automation\marketing-automation-demo\tests\integration\src\e2e-flow.spec.ts" time="0.768" failures="0">
+    <testcase name="E2E flow customer -&gt; consent -&gt; idempotent event -&gt; next offer" time="0.312" classname="customer -&gt; consent -&gt; idempotent event -&gt; next offer">
+    </testcase>
+  </testsuite>
+  <testsuite name="Events" timestamp="2026-02-13T04:26:51" tests="3" file="D:\apps\test-automation\marketing-automation-demo\tests\integration\src\events.spec.ts" time="3.695" failures="0">
+    <testcase name="Events is idempotent by idempotencyKey (201 then 200, same id/createdAt)" time="0.089" classname="is idempotent by idempotencyKey (201 then 200, same id/createdAt)">
+    </testcase>
+    <testcase name="Events returns 404 when customer does not exist" time="0.005" classname="returns 404 when customer does not exist">
+    </testcase>
+    <testcase name="Events returns 400 when idempotencyKey is too short" time="0.071" classname="returns 400 when idempotencyKey is too short">
+    </testcase>
+  </testsuite>
+  <testsuite name="Offers (Next Best Offer)" timestamp="2026-02-13T04:26:55" tests="3" file="D:\apps\test-automation\marketing-automation-demo\tests\integration\src\offers.spec.ts" time="3.897" failures="0">
+    <testcase name="Offers (Next Best Offer) returns NO_MARKETING_CONSENT and does not insert into offers" time="0.070" classname="returns NO_MARKETING_CONSENT and does not insert into offers">
+    </testcase>
+    <testcase name="Offers (Next Best Offer) returns NO_RELEVANT_EVENT when consent true but no event" time="0.079" classname="returns NO_RELEVANT_EVENT when consent true but no event">
+    </testcase>
+    <testcase name="Offers (Next Best Offer) returns offer and inserts decision record when eligible" time="0.548" classname="returns offer and inserts decision record when eligible">
+    </testcase>
+  </testsuite>
+</testsuites>
