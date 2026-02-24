@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { beforeEachHook, afterAllHook } from './helpers/setup';
 import { makeClients, createCustomer } from './helpers/fixtures';
+import { isErrorResponse } from '@marketing/test-kit/src/http/typeGuards';
 import { queryOne } from '@marketing/test-kit/src/db/dbClient';
 
 describe('Events', () => {
@@ -52,7 +53,9 @@ describe('Events', () => {
     });
 
     expect(res.status).to.equal(404);
-    expect((res.json as any).error?.message).to.be.a('string');
+    if (isErrorResponse(res)) {
+      expect(res.json.error?.message).to.be.a('string');
+    }
   });
 
   it('returns 400 when idempotencyKey is too short', async () => {
@@ -65,6 +68,8 @@ describe('Events', () => {
     });
 
     expect(res.status).to.equal(400);
-    expect((res.json as any).error?.message).to.be.a('string');
+    if (isErrorResponse(res)) {
+      expect(res.json.error?.message).to.be.a('string');
+    }
   });
 });

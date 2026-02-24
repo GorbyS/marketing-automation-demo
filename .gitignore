@@ -4,3 +4,4 @@ dist
 coverage
 *.log
 docker-data
+tests/integration/reports
