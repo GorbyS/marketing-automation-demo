@@ -1,4 +1,4 @@
-Marketing Automation Demo (Mocha + TypeScript + Express + Postgres)
+# Marketing Automation Demo (Mocha + TypeScript + Express + Postgres)
 
 This project demonstrates production-like backend API automation for a Personalized Marketing / CRM system.
 
@@ -13,7 +13,7 @@ Seed script for demo data
 Database-level assertions
 Idempotency testing
 
-Architecture Overview
+## Architecture Overview
 
 apps/marketing-api → Express backend
 packages/test-kit → reusable API client + DB helpers
@@ -21,13 +21,13 @@ tests/integration → Mocha integration tests
 openapi/ → OpenAPI contract
 scripts/seed → demo data generator
 
-Requirements
+## Requirements
 
 Node.js 18+
 Docker
 npm
 
-Setup
+## Setup
 Install dependencies: npm install
 Start PostgreSQL: docker compose up -d
 Run migrations: npm run db:migrate
